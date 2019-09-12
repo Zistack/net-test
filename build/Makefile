@@ -11,7 +11,7 @@ net-test-WARNINGS ::= -Wchar-subscripts -Wcomment -Wformat=2 -Winit-self -Wimpli
 -Wvolatile-register-var -Wno-write-strings -Wsign-promo
 
 net-test-CPP ::= clang++
-net-test-CFLAGS ::= $(net-test-WARNINGS) -Werror -pipe
+net-test-CFLAGS ::= $(net-test-WARNINGS) -Werror -pipe -std=c++17
 net-test-LFLAGS ::=
 
 net-test-header-install-dir ::= /usr/local/include
