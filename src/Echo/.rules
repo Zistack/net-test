@@ -1,0 +1,52 @@
+Echo-dependency-targets ::= $(foreach \
+	Echo-dependency,$\
+	$(Echo-dependencies),$\
+	$($(Echo-dependency)-target)$\
+)
+
+Echo-dependency-install-targets ::= $(foreach \
+	Echo-dependency,$\
+	$(Echo-dependencies),$\
+	$($(Echo-dependency)-install-target)$\
+)
+
+.PHONY : Echo
+Echo : $(Echo-target)
+
+.PHONY : Echo-clean
+Echo-clean :
+	rm -rf $(Echo-include-file)
+	rm -rf $(Echo-include-files)
+	rm -rf $(Echo-include-directories)
+	rm -rf $(Echo-build-file)
+	rm -rf $(Echo-top-file)
+
+.PHONY : Echo-install
+Echo-install : $(Echo-install-target)
+
+.PHONY : Echo-uninstall
+Echo-uninstall :
+	rm -rf $(Echo-install-file)
+	rm -rf $(Echo-install-files)
+	rm -rf $(Echo-install-directories)
+
+.DELETE_ON_ERROR : $(Echo-top-file)
+$(Echo-top-file) : $(Echo-deps-files) $(Echo-directories)
+	cliide header-include-file $(Echo-path) > $(@)
+
+$(Echo-build-file) : $(Echo-top-file) $(Echo-header-files) $(Echo-dependency-targets)
+	$(net-test-CPP) $(Echo-include-flags) $(net-test-CFLAGS) $(Echo-CFLAGS) -c -o $(@) $(<)
+
+$(Echo-include-path)/%.hpp : $(Echo-path)/%.hpp $(Echo-build-file)
+	mkdir -p $(dir $(@))
+	cp $(<) $(@)
+
+$(Echo-include-file) : $(Echo-top-file) $(Echo-build-file)
+	cp $(<) $(@)
+
+$(Echo-install-path)/%.hpp : $(Echo-include-path)/%.hpp $(Echo-dependency-install-targets)
+	mkdir -p $(dir $(@))
+	cp $(<) $(@)
+
+$(Echo-install-file) : $(Echo-include-file)
+	cp $(<) $(@)

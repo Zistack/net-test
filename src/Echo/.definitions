@@ -1,0 +1,60 @@
+# User-configurable options
+
+Echo-CFLAGS ::=
+Echo-LFLAGS ::=
+
+# Boilerplate that shouldn't be touched
+
+Echo-path ::= $(net-test-src-dir)/Echo
+
+Echo-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./Echo -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+Echo-header-files ::= \
+	$(filter %.hpp, $(Echo-files-and-directories))
+Echo-deps-files ::= \
+	$(filter %/deps, $(Echo-files-and-directories))
+Echo-directories ::= \
+	$(filter-out %.hpp %/deps, $(Echo-files-and-directories))
+
+Echo-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(Echo-path)/include.hpp)
+
+Echo-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(Echo-dependency-candidates)$\
+)
+
+Echo-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+Echo-inc-dir-flags ::= $(Echo-inc-dirs:%=-I %)
+Echo-include-flags ::= -I $(net-test-src-dir) $(Echo-inc-dir-flags)
+
+Echo-top-file ::= $(Echo-path)/.build/Echo.hpp
+Echo-build-file ::= $(Echo-path)/.build/Echo.hpp.gch
+
+Echo-include-file ::= $(net-test-inc-dir)/Echo.hpp
+Echo-include-path ::= $(net-test-inc-dir)/Echo
+Echo-include-files ::= \
+	$(Echo-header-files:$(net-test-src-dir)/%=$(net-test-inc-dir)/%)
+Echo-include-directories ::= \
+	$(Echo-directories:$(net-test-src-dir)/%=$(net-test-inc-dir)/%)
+
+Echo-target ::= $(Echo-include-files) $(Echo-include-file)
+
+Echo-install-file ::= $(net-test-header-install-dir)/Echo.hpp
+Echo-install-path ::= $(net-test-header-install-dir)/Echo
+Echo-install-files ::= \
+	$(Echo-header-files:$(Echo-path)/%=$(Echo-install-path)/%)
+Echo-install-directories ::= \
+	$(Echo-directories:$(Echo-path)/%=$(Echo-install-path)/%)
+
+Echo-install-target ::= $(Echo-install-files) $(Echo-install-file)
