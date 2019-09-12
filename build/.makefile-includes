@@ -1,0 +1,91 @@
+# Include project references
+
+## Find all project references
+net-test-reference-dirs ::= $(shell \
+	find $(net-test-ref-dir) -mindepth 1 -maxdepth 1 -type l -regex '.*/[^.][^/]*' \
+)
+net-test-references = $(net-test-reference-dirs:$(net-test-ref-dir)/%=%)
+
+## Compute the real directories for these projects
+net-test-reference-real-dirs ::= $(foreach \
+	net-test-reference-dir,$\
+	$(net-test-reference-dirs),$\
+	$(realpath $(net-test-reference-dir))$\
+)
+
+## Filter out the projects that we have already included
+net-test-pending-includes ::= $(filter-out \
+	$(net-test-previously-included),$\
+	$(net-test-reference-real-dirs)$\
+)
+
+## Define our inclusion function
+define net-test-include-reference =
+
+### Set the project's base directory
+$(1)-base-dir ::= $(2)
+
+### Tell the project about what we've already included
+$(1)-previously-included ::= $$(sort \
+	$$(net-test-previously-included)$\
+	$$(net-test-reference-real-dirs)$\
+)
+
+### Include the project's Makefile
+include $$($(1)-base-dir)/build/Makefile
+
+endef
+
+## Call our inclusion function for all projects that still need to be included
+$(foreach \
+	net-test-pending-include,$\
+	$(net-test-pending-includes),$\
+	$(eval \
+		$(call \
+			net-test-include-reference,$\
+			$(notdir $(net-test-pending-include)),$\
+			$(net-test-pending-include)$\
+		)$\
+	)$\
+)
+
+# Compute exported project reference targets
+net-test-reference-export-targets ::= $(sort \
+	$(foreach \
+		net-test-reference,$\
+		$(net-test-references),$\
+		$($(net-test-reference)-export-targets)$\
+	)$\
+)
+
+# Compute project reference include directories
+net-test-reference-inc-dirs ::= $(sort \
+	$(foreach \
+		net-test-reference,$\
+		$(net-test-references),$\
+		$($(net-test-reference)-inc-dir)$\
+	)$\
+)
+
+# Include modules
+
+## Find all modules
+net-test-module-dirs ::= $(shell \
+	find $(net-test-src-dir) -mindepth 1 -maxdepth 1 -type d -regex '.*/[^.][^/]*'$\
+)
+net-test-module-definitions ::= $(net-test-module-dirs:%=%/.definitions)
+net-test-module-rules ::= $(net-test-module-dirs:%=%/.rules)
+
+## Define modules for toplevel makefile
+net-test-modules ::= $(net-test-module-dirs:$(net-test-src-dir)/%=%)
+
+## Define target exports for modules and referring projects
+net-test-export-targets ::= \
+	$(net-test-modules) \
+	$(net-test-reference-export-targets)
+
+## Include all module definitions
+include $(net-test-module-definitions)
+
+## Include all module rules
+include $(net-test-module-rules)
