@@ -1,10 +1,6 @@
 struct T
 {
-	T
-	(
-		std::chrono::nanoseconds input_timeout,
-		std::chrono::nanoseconds output_timeout
-	);
+	T (Echo::Client::Protocol::T & echo_protocol);
 
 	template <typename InputStream>
 	std::string
@@ -21,6 +17,5 @@ struct T
 
 private:
 
-	std::chrono::nanoseconds m_input_timeout;
-	std::chrono::nanoseconds m_output_timeout;
+	Echo::Client::Protocol::T & m_echo_protocol;
 };
