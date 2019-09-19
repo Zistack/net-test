@@ -10,8 +10,7 @@ T::readRequest (InputStream && input_stream)
 			Thread::Timer::T input_timer
 			(
 				this -> m_input_timeout,
-				InputStream::cancel,
-				& input_stream
+				[&] () { input_stream . cancel (); }
 			);
 
 			while

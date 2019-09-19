@@ -8,8 +8,7 @@ T::writeResponse (const std::string & response, OutputStream && output_stream)
 			Thread::Timer::T output_timer
 			(
 				this -> m_output_timeout,
-				& OutputStream::cancel,
-				& output_stream
+				[&] () { output_stream . cancel (); }
 			);
 
 			if constexpr (IO::TypeTraits::IsBuffered::T <OutputStream>::value)
