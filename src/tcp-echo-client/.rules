@@ -1,0 +1,40 @@
+tcp-echo-client-dependency-targets ::= $(foreach \
+	tcp-echo-client-dependency,$\
+	$(tcp-echo-client-dependencies),$\
+	$($(tcp-echo-client-dependency)-target)$\
+)
+
+tcp-echo-client-dependency-install-targets ::= $(foreach \
+	tcp-echo-client-dependency,$\
+	$(tcp-echo-client-dependencies),$\
+	$($(tcp-echo-client-dependency)-install-target)$\
+)
+
+.PHONY : tcp-echo-client
+tcp-echo-client : $(tcp-echo-client-target)
+
+.PHONY : tcp-echo-client-clean
+tcp-echo-client-clean :
+	rm -rf $(tcp-echo-client-bin-file)
+	rm -rf $(tcp-echo-client-build-file)
+	rm -rf $(tcp-echo-client-top-file)
+
+.PHONY : tcp-echo-client-install
+tcp-echo-client-install : $(tcp-echo-client-install-target)
+
+.PHONY : tcp-echo-client-uninstall
+tcp-echo-client-uninstall :
+	rm -rf $(tcp-echo-client-install-file)
+
+.DELETE_ON_ERROR : $(tcp-echo-client-top-file)
+$(tcp-echo-client-top-file) : $(tcp-echo-client-deps-files) $(tcp-echo-client-directories)
+	cliide binary-include-file $(tcp-echo-client-path) > $(@)
+
+$(tcp-echo-client-build-file) : $(tcp-echo-client-top-file) $(tcp-echo-client-header-files) $(tcp-echo-client-dependency-targets)
+	$(net-test-CPP) $(tcp-echo-client-include-flags) $(net-test-CFLAGS) $(tcp-echo-client-CFLAGS) -c -o $(@) $(<)
+
+$(tcp-echo-client-bin-file) : $(tcp-echo-client-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(tcp-echo-client-LFLAGS) -o $(@) $(<)
+
+$(tcp-echo-client-install-file) : $(tcp-echo-client-bin-file) $(tcp-echo-client-dependency-install-targets)
+	cp $(<) $(@)
