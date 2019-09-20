@@ -1,0 +1,40 @@
+exception-store-test-dependency-targets ::= $(foreach \
+	exception-store-test-dependency,$\
+	$(exception-store-test-dependencies),$\
+	$($(exception-store-test-dependency)-target)$\
+)
+
+exception-store-test-dependency-install-targets ::= $(foreach \
+	exception-store-test-dependency,$\
+	$(exception-store-test-dependencies),$\
+	$($(exception-store-test-dependency)-install-target)$\
+)
+
+.PHONY : exception-store-test
+exception-store-test : $(exception-store-test-target)
+
+.PHONY : exception-store-test-clean
+exception-store-test-clean :
+	rm -rf $(exception-store-test-bin-file)
+	rm -rf $(exception-store-test-build-file)
+	rm -rf $(exception-store-test-top-file)
+
+.PHONY : exception-store-test-install
+exception-store-test-install : $(exception-store-test-install-target)
+
+.PHONY : exception-store-test-uninstall
+exception-store-test-uninstall :
+	rm -rf $(exception-store-test-install-file)
+
+.DELETE_ON_ERROR : $(exception-store-test-top-file)
+$(exception-store-test-top-file) : $(exception-store-test-deps-files) $(exception-store-test-directories)
+	cliide binary-include-file $(exception-store-test-path) > $(@)
+
+$(exception-store-test-build-file) : $(exception-store-test-top-file) $(exception-store-test-header-files) $(exception-store-test-dependency-targets)
+	$(net-test-CPP) $(exception-store-test-include-flags) $(net-test-CFLAGS) $(exception-store-test-CFLAGS) -c -o $(@) $(<)
+
+$(exception-store-test-bin-file) : $(exception-store-test-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(exception-store-test-LFLAGS) -o $(@) $(<)
+
+$(exception-store-test-install-file) : $(exception-store-test-bin-file) $(exception-store-test-dependency-install-targets)
+	cp $(<) $(@)

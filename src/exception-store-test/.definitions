@@ -1,0 +1,51 @@
+# User-configurable options
+
+exception-store-test-CFLAGS ::=
+exception-store-test-LFLAGS ::=
+
+# Boilerplate that shouldn't be touched
+
+exception-store-test-path ::= $(net-test-src-dir)/exception-store-test
+
+exception-store-test-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./exception-store-test -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+exception-store-test-header-files ::= \
+	$(filter %.hpp, $(exception-store-test-files-and-directories))
+exception-store-test-deps-files ::= \
+	$(filter %/deps, $(exception-store-test-files-and-directories))
+exception-store-test-directories ::= \
+	$(filter-out %.hpp %/deps, $(exception-store-test-files-and-directories))
+
+exception-store-test-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(exception-store-test-path)/include.hpp)
+
+exception-store-test-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(exception-store-test-dependency-candidates)$\
+)
+
+exception-store-test-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+exception-store-test-inc-dir-flags ::= $(exception-store-test-inc-dirs:%=-I %)
+exception-store-test-include-flags ::= -I $(exception-store-test-path) $(exception-store-test-inc-dir-flags)
+
+exception-store-test-top-file ::= $(exception-store-test-path)/.build/main.cpp
+
+exception-store-test-build-file ::= $(exception-store-test-path)/.build/main.o
+
+exception-store-test-bin-file ::= $(net-test-bin-dir)/exception-store-test
+
+exception-store-test-target ::= $(exception-store-test-bin-file)
+
+exception-store-test-install-file ::= $(net-test-binary-install-dir)/exception-store-test
+
+exception-store-test-install-target ::= $(exception-store-test-install-file)
