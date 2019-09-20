@@ -1,0 +1,51 @@
+# User-configurable options
+
+nursery-test-CFLAGS ::=
+nursery-test-LFLAGS ::= -lpthread
+
+# Boilerplate that shouldn't be touched
+
+nursery-test-path ::= $(net-test-src-dir)/nursery-test
+
+nursery-test-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./nursery-test -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+nursery-test-header-files ::= \
+	$(filter %.hpp, $(nursery-test-files-and-directories))
+nursery-test-deps-files ::= \
+	$(filter %/deps, $(nursery-test-files-and-directories))
+nursery-test-directories ::= \
+	$(filter-out %.hpp %/deps, $(nursery-test-files-and-directories))
+
+nursery-test-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(nursery-test-path)/include.hpp)
+
+nursery-test-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(nursery-test-dependency-candidates)$\
+)
+
+nursery-test-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+nursery-test-inc-dir-flags ::= $(nursery-test-inc-dirs:%=-I %)
+nursery-test-include-flags ::= -I $(nursery-test-path) $(nursery-test-inc-dir-flags)
+
+nursery-test-top-file ::= $(nursery-test-path)/.build/main.cpp
+
+nursery-test-build-file ::= $(nursery-test-path)/.build/main.o
+
+nursery-test-bin-file ::= $(net-test-bin-dir)/nursery-test
+
+nursery-test-target ::= $(nursery-test-bin-file)
+
+nursery-test-install-file ::= $(net-test-binary-install-dir)/nursery-test
+
+nursery-test-install-target ::= $(nursery-test-install-file)

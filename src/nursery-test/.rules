@@ -1,0 +1,40 @@
+nursery-test-dependency-targets ::= $(foreach \
+	nursery-test-dependency,$\
+	$(nursery-test-dependencies),$\
+	$($(nursery-test-dependency)-target)$\
+)
+
+nursery-test-dependency-install-targets ::= $(foreach \
+	nursery-test-dependency,$\
+	$(nursery-test-dependencies),$\
+	$($(nursery-test-dependency)-install-target)$\
+)
+
+.PHONY : nursery-test
+nursery-test : $(nursery-test-target)
+
+.PHONY : nursery-test-clean
+nursery-test-clean :
+	rm -rf $(nursery-test-bin-file)
+	rm -rf $(nursery-test-build-file)
+	rm -rf $(nursery-test-top-file)
+
+.PHONY : nursery-test-install
+nursery-test-install : $(nursery-test-install-target)
+
+.PHONY : nursery-test-uninstall
+nursery-test-uninstall :
+	rm -rf $(nursery-test-install-file)
+
+.DELETE_ON_ERROR : $(nursery-test-top-file)
+$(nursery-test-top-file) : $(nursery-test-deps-files) $(nursery-test-directories)
+	cliide binary-include-file $(nursery-test-path) > $(@)
+
+$(nursery-test-build-file) : $(nursery-test-top-file) $(nursery-test-header-files) $(nursery-test-dependency-targets)
+	$(net-test-CPP) $(nursery-test-include-flags) $(net-test-CFLAGS) $(nursery-test-CFLAGS) -c -o $(@) $(<)
+
+$(nursery-test-bin-file) : $(nursery-test-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(nursery-test-LFLAGS) -o $(@) $(<)
+
+$(nursery-test-install-file) : $(nursery-test-bin-file) $(nursery-test-dependency-install-targets)
+	cp $(<) $(@)
