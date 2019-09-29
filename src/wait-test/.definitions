@@ -1,0 +1,51 @@
+# User-configurable options
+
+wait-test-CFLAGS ::=
+wait-test-LFLAGS ::= -lpthread
+
+# Boilerplate that shouldn't be touched
+
+wait-test-path ::= $(net-test-src-dir)/wait-test
+
+wait-test-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./wait-test -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+wait-test-header-files ::= \
+	$(filter %.hpp, $(wait-test-files-and-directories))
+wait-test-deps-files ::= \
+	$(filter %/deps, $(wait-test-files-and-directories))
+wait-test-directories ::= \
+	$(filter-out %.hpp %/deps, $(wait-test-files-and-directories))
+
+wait-test-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(wait-test-path)/include.hpp)
+
+wait-test-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(wait-test-dependency-candidates)$\
+)
+
+wait-test-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+wait-test-inc-dir-flags ::= $(wait-test-inc-dirs:%=-I %)
+wait-test-include-flags ::= -I $(wait-test-path) $(wait-test-inc-dir-flags)
+
+wait-test-top-file ::= $(wait-test-path)/.build/main.cpp
+
+wait-test-build-file ::= $(wait-test-path)/.build/main.o
+
+wait-test-bin-file ::= $(net-test-bin-dir)/wait-test
+
+wait-test-target ::= $(wait-test-bin-file)
+
+wait-test-install-file ::= $(net-test-binary-install-dir)/wait-test
+
+wait-test-install-target ::= $(wait-test-install-file)

@@ -1,0 +1,40 @@
+wait-test-dependency-targets ::= $(foreach \
+	wait-test-dependency,$\
+	$(wait-test-dependencies),$\
+	$($(wait-test-dependency)-target)$\
+)
+
+wait-test-dependency-install-targets ::= $(foreach \
+	wait-test-dependency,$\
+	$(wait-test-dependencies),$\
+	$($(wait-test-dependency)-install-target)$\
+)
+
+.PHONY : wait-test
+wait-test : $(wait-test-target)
+
+.PHONY : wait-test-clean
+wait-test-clean :
+	rm -rf $(wait-test-bin-file)
+	rm -rf $(wait-test-build-file)
+	rm -rf $(wait-test-top-file)
+
+.PHONY : wait-test-install
+wait-test-install : $(wait-test-install-target)
+
+.PHONY : wait-test-uninstall
+wait-test-uninstall :
+	rm -rf $(wait-test-install-file)
+
+.DELETE_ON_ERROR : $(wait-test-top-file)
+$(wait-test-top-file) : $(wait-test-deps-files) $(wait-test-directories)
+	cliide binary-include-file $(wait-test-path) > $(@)
+
+$(wait-test-build-file) : $(wait-test-top-file) $(wait-test-header-files) $(wait-test-dependency-targets)
+	$(net-test-CPP) $(wait-test-include-flags) $(net-test-CFLAGS) $(wait-test-CFLAGS) -c -o $(@) $(<)
+
+$(wait-test-bin-file) : $(wait-test-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(wait-test-LFLAGS) -o $(@) $(<)
+
+$(wait-test-install-file) : $(wait-test-bin-file) $(wait-test-dependency-install-targets)
+	cp $(<) $(@)
