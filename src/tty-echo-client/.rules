@@ -1,0 +1,40 @@
+tty-echo-client-dependency-targets ::= $(foreach \
+	tty-echo-client-dependency,$\
+	$(tty-echo-client-dependencies),$\
+	$($(tty-echo-client-dependency)-target)$\
+)
+
+tty-echo-client-dependency-install-targets ::= $(foreach \
+	tty-echo-client-dependency,$\
+	$(tty-echo-client-dependencies),$\
+	$($(tty-echo-client-dependency)-install-target)$\
+)
+
+.PHONY : tty-echo-client
+tty-echo-client : $(tty-echo-client-target)
+
+.PHONY : tty-echo-client-clean
+tty-echo-client-clean :
+	rm -rf $(tty-echo-client-bin-file)
+	rm -rf $(tty-echo-client-build-file)
+	rm -rf $(tty-echo-client-top-file)
+
+.PHONY : tty-echo-client-install
+tty-echo-client-install : $(tty-echo-client-install-target)
+
+.PHONY : tty-echo-client-uninstall
+tty-echo-client-uninstall :
+	rm -rf $(tty-echo-client-install-file)
+
+.DELETE_ON_ERROR : $(tty-echo-client-top-file)
+$(tty-echo-client-top-file) : $(tty-echo-client-deps-files) $(tty-echo-client-directories)
+	cliide binary-include-file $(tty-echo-client-path) > $(@)
+
+$(tty-echo-client-build-file) : $(tty-echo-client-top-file) $(tty-echo-client-header-files) $(tty-echo-client-dependency-targets)
+	$(net-test-CPP) $(tty-echo-client-include-flags) $(net-test-CFLAGS) $(tty-echo-client-CFLAGS) -c -o $(@) $(<)
+
+$(tty-echo-client-bin-file) : $(tty-echo-client-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(tty-echo-client-LFLAGS) -o $(@) $(<)
+
+$(tty-echo-client-install-file) : $(tty-echo-client-bin-file) $(tty-echo-client-dependency-install-targets)
+	cp $(<) $(@)

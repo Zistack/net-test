@@ -1,0 +1,51 @@
+# User-configurable options
+
+tty-echo-client-CFLAGS ::=
+tty-echo-client-LFLAGS ::= -lpthread
+
+# Boilerplate that shouldn't be touched
+
+tty-echo-client-path ::= $(net-test-src-dir)/tty-echo-client
+
+tty-echo-client-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./tty-echo-client -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+tty-echo-client-header-files ::= \
+	$(filter %.hpp, $(tty-echo-client-files-and-directories))
+tty-echo-client-deps-files ::= \
+	$(filter %/deps, $(tty-echo-client-files-and-directories))
+tty-echo-client-directories ::= \
+	$(filter-out %.hpp %/deps, $(tty-echo-client-files-and-directories))
+
+tty-echo-client-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(tty-echo-client-path)/include.hpp)
+
+tty-echo-client-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(tty-echo-client-dependency-candidates)$\
+)
+
+tty-echo-client-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+tty-echo-client-inc-dir-flags ::= $(tty-echo-client-inc-dirs:%=-I %)
+tty-echo-client-include-flags ::= -I $(tty-echo-client-path) $(tty-echo-client-inc-dir-flags)
+
+tty-echo-client-top-file ::= $(tty-echo-client-path)/.build/main.cpp
+
+tty-echo-client-build-file ::= $(tty-echo-client-path)/.build/main.o
+
+tty-echo-client-bin-file ::= $(net-test-bin-dir)/tty-echo-client
+
+tty-echo-client-target ::= $(tty-echo-client-bin-file)
+
+tty-echo-client-install-file ::= $(net-test-binary-install-dir)/tty-echo-client
+
+tty-echo-client-install-target ::= $(tty-echo-client-install-file)
