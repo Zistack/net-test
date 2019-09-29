@@ -1,5 +1,18 @@
-int main (int argc, char ** argv)
+int
+main (int argc, char ** argv)
 {
+	IO::Util::setNonblocking (STDIN_FILENO);
+	IO::Blocking::InputStream::T stdin
+	(
+		IO::FileDescriptor::Reciever::T (STDIN_FILENO)
+	);
+
+	IO::Util::setNonblocking (STDOUT_FILENO);
+	IO::Blocking::OutputStream::T stdout
+	(
+		IO::FileDescriptor::Sender::T (STDOUT_FILENO)
+	);
+
 	// Get client configuration.
 
 	std::string config_file_name = "tcp-echo-client.cfg";
@@ -24,32 +37,34 @@ int main (int argc, char ** argv)
 				"help",
 				[&] ()
 				{
-					getopts_spec . printHelp
-					(
-						IO::Blocking::OutputStream::T
-						(
-							IO::FileDescriptor::Sender::T (STDOUT_FILENO)
-						),
-						argv [0],
-						80,
-						8,
-						0
-					);
+					{
+						Scope::T output_scope (stdout);
+
+						getopts_spec . printHelp (stdout, argv [0], 80, 8, 0);
+					}
 
 					exit (EXIT_SUCCESS);
 				},
 				"Prints this message and exits."
+			},
+			{
+				"config-help",
+				[&] ()
+				{
+					{
+						Scope::T output_scope (stdout);
+
+						Config::T::printHelp (stdout, 80, 8, 0);
+					}
+
+					exit (EXIT_SUCCESS);
+				},
+				"Prints documentation for the configuration file and exits."
 			}
 		}
 	);
 
-	GetOpts::parse
-	(
-		argc,
-		argv,
-		getopts_spec,
-		nullptr
-	);
+	GetOpts::parse (argc, argv, getopts_spec, nullptr);
 
 	// There's an IO::Util::parseFile that might be more appropriate here.
 
@@ -74,24 +89,21 @@ int main (int argc, char ** argv)
 
 	Thread::Nursery::Aggregate::T nursery
 	(
-		std::forward_as_tuple (tcp_client, [&] () { tcp_client . run (); }),
+		std::forward_as_tuple
+		(
+			tcp_client,
+			[&] ()
+			{
+				fprintf (stderr, "Running TCP client\n");
+				tcp_client . run ();
+			}
+		),
 		std::forward_as_tuple
 		(
 			echo_proxy,
-			[&] ()
-			{
-				echo_proxy . run
-				(
-					IO::Blocking::InputStream::T
-					(
-						IO::FileDescriptor::Reciever::T (STDIN_FILENO)
-					),
-					IO::Blocking::OutputStream::T
-					(
-						IO::FileDescriptor::Sender::T (STDOUT_FILENO)
-					)
-				);
-			}
+			[&] () { echo_proxy . run (stdin, stdout); }
 		)
 	);
+
+	return 0;
 }
