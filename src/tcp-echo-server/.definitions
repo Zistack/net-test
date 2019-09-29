@@ -1,0 +1,51 @@
+# User-configurable options
+
+tcp-echo-server-CFLAGS ::=
+tcp-echo-server-LFLAGS ::= -lpthread
+
+# Boilerplate that shouldn't be touched
+
+tcp-echo-server-path ::= $(net-test-src-dir)/tcp-echo-server
+
+tcp-echo-server-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./tcp-echo-server -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+tcp-echo-server-header-files ::= \
+	$(filter %.hpp, $(tcp-echo-server-files-and-directories))
+tcp-echo-server-deps-files ::= \
+	$(filter %/deps, $(tcp-echo-server-files-and-directories))
+tcp-echo-server-directories ::= \
+	$(filter-out %.hpp %/deps, $(tcp-echo-server-files-and-directories))
+
+tcp-echo-server-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(tcp-echo-server-path)/include.hpp)
+
+tcp-echo-server-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(tcp-echo-server-dependency-candidates)$\
+)
+
+tcp-echo-server-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+tcp-echo-server-inc-dir-flags ::= $(tcp-echo-server-inc-dirs:%=-I %)
+tcp-echo-server-include-flags ::= -I $(tcp-echo-server-path) $(tcp-echo-server-inc-dir-flags)
+
+tcp-echo-server-top-file ::= $(tcp-echo-server-path)/.build/main.cpp
+
+tcp-echo-server-build-file ::= $(tcp-echo-server-path)/.build/main.o
+
+tcp-echo-server-bin-file ::= $(net-test-bin-dir)/tcp-echo-server
+
+tcp-echo-server-target ::= $(tcp-echo-server-bin-file)
+
+tcp-echo-server-install-file ::= $(net-test-binary-install-dir)/tcp-echo-server
+
+tcp-echo-server-install-target ::= $(tcp-echo-server-install-file)

@@ -1,0 +1,40 @@
+tcp-echo-server-dependency-targets ::= $(foreach \
+	tcp-echo-server-dependency,$\
+	$(tcp-echo-server-dependencies),$\
+	$($(tcp-echo-server-dependency)-target)$\
+)
+
+tcp-echo-server-dependency-install-targets ::= $(foreach \
+	tcp-echo-server-dependency,$\
+	$(tcp-echo-server-dependencies),$\
+	$($(tcp-echo-server-dependency)-install-target)$\
+)
+
+.PHONY : tcp-echo-server
+tcp-echo-server : $(tcp-echo-server-target)
+
+.PHONY : tcp-echo-server-clean
+tcp-echo-server-clean :
+	rm -rf $(tcp-echo-server-bin-file)
+	rm -rf $(tcp-echo-server-build-file)
+	rm -rf $(tcp-echo-server-top-file)
+
+.PHONY : tcp-echo-server-install
+tcp-echo-server-install : $(tcp-echo-server-install-target)
+
+.PHONY : tcp-echo-server-uninstall
+tcp-echo-server-uninstall :
+	rm -rf $(tcp-echo-server-install-file)
+
+.DELETE_ON_ERROR : $(tcp-echo-server-top-file)
+$(tcp-echo-server-top-file) : $(tcp-echo-server-deps-files) $(tcp-echo-server-directories)
+	cliide binary-include-file $(tcp-echo-server-path) > $(@)
+
+$(tcp-echo-server-build-file) : $(tcp-echo-server-top-file) $(tcp-echo-server-header-files) $(tcp-echo-server-dependency-targets)
+	$(net-test-CPP) $(tcp-echo-server-include-flags) $(net-test-CFLAGS) $(tcp-echo-server-CFLAGS) -c -o $(@) $(<)
+
+$(tcp-echo-server-bin-file) : $(tcp-echo-server-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(tcp-echo-server-LFLAGS) -o $(@) $(<)
+
+$(tcp-echo-server-install-file) : $(tcp-echo-server-bin-file) $(tcp-echo-server-dependency-install-targets)
+	cp $(<) $(@)
