@@ -94,7 +94,6 @@ main (int argc, char ** argv)
 			tcp_client,
 			[&] ()
 			{
-				fprintf (stderr, "Running TCP client\n");
 				tcp_client . run ();
 			}
 		),
