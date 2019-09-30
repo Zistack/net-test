@@ -100,7 +100,11 @@ main (int argc, char ** argv)
 		std::forward_as_tuple
 		(
 			echo_proxy,
-			[&] () { echo_proxy . run (stdin, stdout); }
+			[&] ()
+			{
+				echo_proxy . run (stdin, stdout);
+				tcp_client . cancel ();
+			}
 		)
 	);
 
