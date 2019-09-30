@@ -80,6 +80,10 @@ main (int argc, char ** argv)
 				{
 					stdin . clear ();
 				}
+				catch (Failure::EndOfResource::T)
+				{
+					tcp_server . cancel ();
+				}
 			}
 		)
 	);
