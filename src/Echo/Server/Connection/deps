@@ -1,1 +1,1 @@
-children : Protocol.children
+children : FIFOProtocol.children
