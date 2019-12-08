@@ -8,7 +8,10 @@ T::respond (const HTTP::Request::T & request)
 		"1.1",
 		426,
 		"Upgrade Required",
-		{std::make_pair ("Sec-WebSocket-Version", "13")},
+		std::initializer_list <std::pair <std::string, std::string>>
+		{
+			std::make_pair ("Sec-WebSocket-Version", "13")
+		},
 		std::nullopt
 	);
 }
