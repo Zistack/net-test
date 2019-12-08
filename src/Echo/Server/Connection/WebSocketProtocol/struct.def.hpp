@@ -10,5 +10,7 @@ struct T : private WebSocketProtocolInterface::T
 
 	~T () = default;
 
+	using WebSocketProtocolInterface::T::createResponse;
+
 	using WebSocketProtocolInterface::T::NAME;
 };
