@@ -1,7 +1,7 @@
 # User-configurable options
 
 tty-echo-client-CFLAGS ::=
-tty-echo-client-LFLAGS ::= -lpthread
+tty-echo-client-LFLAGS ::= -lpthread -lkcapi
 
 # Boilerplate that shouldn't be touched
 

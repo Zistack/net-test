@@ -1,7 +1,7 @@
 # User-configurable options
 
 tcp-echo-server-CFLAGS ::=
-tcp-echo-server-LFLAGS ::= -lpthread
+tcp-echo-server-LFLAGS ::= -lpthread -lkcapi
 
 # Boilerplate that shouldn't be touched
 
