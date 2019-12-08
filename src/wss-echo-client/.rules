@@ -1,0 +1,40 @@
+wss-echo-client-dependency-targets ::= $(foreach \
+	wss-echo-client-dependency,$\
+	$(wss-echo-client-dependencies),$\
+	$($(wss-echo-client-dependency)-target)$\
+)
+
+wss-echo-client-dependency-install-targets ::= $(foreach \
+	wss-echo-client-dependency,$\
+	$(wss-echo-client-dependencies),$\
+	$($(wss-echo-client-dependency)-install-target)$\
+)
+
+.PHONY : wss-echo-client
+wss-echo-client : $(wss-echo-client-target)
+
+.PHONY : wss-echo-client-clean
+wss-echo-client-clean :
+	rm -rf $(wss-echo-client-bin-file)
+	rm -rf $(wss-echo-client-build-file)
+	rm -rf $(wss-echo-client-top-file)
+
+.PHONY : wss-echo-client-install
+wss-echo-client-install : $(wss-echo-client-install-target)
+
+.PHONY : wss-echo-client-uninstall
+wss-echo-client-uninstall :
+	rm -rf $(wss-echo-client-install-file)
+
+.DELETE_ON_ERROR : $(wss-echo-client-top-file)
+$(wss-echo-client-top-file) : $(wss-echo-client-deps-files) $(wss-echo-client-directories)
+	cliide binary-include-file $(wss-echo-client-path) > $(@)
+
+$(wss-echo-client-build-file) : $(wss-echo-client-top-file) $(wss-echo-client-header-files) $(wss-echo-client-dependency-targets)
+	$(net-test-CPP) $(wss-echo-client-include-flags) $(net-test-CFLAGS) $(wss-echo-client-CFLAGS) -c -o $(@) $(<)
+
+$(wss-echo-client-bin-file) : $(wss-echo-client-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(wss-echo-client-LFLAGS) -o $(@) $(<)
+
+$(wss-echo-client-install-file) : $(wss-echo-client-bin-file) $(wss-echo-client-dependency-install-targets)
+	cp $(<) $(@)

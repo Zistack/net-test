@@ -1,0 +1,51 @@
+# User-configurable options
+
+wss-echo-client-CFLAGS ::= -I/usr/include/libressl
+wss-echo-client-LFLAGS ::= -L/usr/lib/libressl -lpthread -lkcapi -ltls
+
+# Boilerplate that shouldn't be touched
+
+wss-echo-client-path ::= $(net-test-src-dir)/wss-echo-client
+
+wss-echo-client-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./wss-echo-client -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+wss-echo-client-header-files ::= \
+	$(filter %.hpp, $(wss-echo-client-files-and-directories))
+wss-echo-client-deps-files ::= \
+	$(filter %/deps, $(wss-echo-client-files-and-directories))
+wss-echo-client-directories ::= \
+	$(filter-out %.hpp %/deps, $(wss-echo-client-files-and-directories))
+
+wss-echo-client-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(wss-echo-client-path)/include.hpp)
+
+wss-echo-client-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(wss-echo-client-dependency-candidates)$\
+)
+
+wss-echo-client-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+wss-echo-client-inc-dir-flags ::= $(wss-echo-client-inc-dirs:%=-I %)
+wss-echo-client-include-flags ::= -I $(wss-echo-client-path) $(wss-echo-client-inc-dir-flags)
+
+wss-echo-client-top-file ::= $(wss-echo-client-path)/.build/main.cpp
+
+wss-echo-client-build-file ::= $(wss-echo-client-path)/.build/main.o
+
+wss-echo-client-bin-file ::= $(net-test-bin-dir)/wss-echo-client
+
+wss-echo-client-target ::= $(wss-echo-client-bin-file)
+
+wss-echo-client-install-file ::= $(net-test-binary-install-dir)/wss-echo-client
+
+wss-echo-client-install-target ::= $(wss-echo-client-install-file)
