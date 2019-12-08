@@ -1,6 +1,15 @@
 struct T : private HTTPProtocolInterface::T
 {
-	using HTTPProtocolInterface::T::T;
+	T
+	(
+		const HTTP::Server::Config::T & config,
+		const std::pair
+		<
+			std::tuple <>,
+			std::tuple <const WebSocket::Config::T &>
+		> &
+			upgrade_arguments
+	);
 
 	using HTTPProtocolInterface::T::prime;
 	using HTTPProtocolInterface::T::run;
