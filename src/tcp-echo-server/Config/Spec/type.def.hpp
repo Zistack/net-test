@@ -11,7 +11,7 @@ using T = GetConfig::Section::T
 	>,
 	GetConfig::Member::T
 	<
-		Echo::Server::Protocol::Config::T,
+		Echo::Server::FIFOProtocol::Config::T,
 		false,
 		ECHO_CONFIG,
 		ECHO_CONFIG_DESCRIPTION,

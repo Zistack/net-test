@@ -74,7 +74,7 @@ main (int argc, char ** argv)
 
 	// Construct the echo client.
 
-	Echo::Client::Protocol::T echo_protocol (config . echoConfig ());
+	Echo::Client::FIFOProtocol::T echo_protocol (config . echoConfig ());
 
 	TCP::Client::Service::T tcp_client (echo_protocol, config . tcpConfig ());
 

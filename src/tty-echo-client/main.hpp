@@ -13,9 +13,9 @@ main (int argc, char ** argv)
 		IO::FileDescriptor::Sender::T (STDOUT_FILENO)
 	);
 
-	Echo::Server::Protocol::Config::T echo_config;
+	Echo::Server::FIFOProtocol::Config::T echo_config;
 
-	Echo::Server::Connection::Protocol::T echo_protocol (echo_config);
+	Echo::Server::Connection::FIFOProtocol::T echo_protocol (echo_config);
 
 	echo_protocol . prime ();
 

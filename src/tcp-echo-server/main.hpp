@@ -54,7 +54,7 @@ main (int argc, char ** argv)
 
 	// Construct the echo server.
 
-	Echo::Server::Protocol::T echo_protocol (config . echoConfig ());
+	Echo::Server::FIFOProtocol::T echo_protocol (config . echoConfig ());
 
 	TCP::Server::Service::T tcp_server (echo_protocol, config . tcpConfig ());
 

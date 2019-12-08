@@ -1,10 +1,10 @@
-const Echo::Client::Protocol::Config::T &
+const Echo::Client::FIFOProtocol::Config::T &
 T::echoConfig () const
 {
 	return this -> value <Spec::ECHO_CONFIG> ();
 }
 
-Echo::Client::Protocol::Config::T &
+Echo::Client::FIFOProtocol::Config::T &
 T::echoConfig ()
 {
 	return this -> value <Spec::ECHO_CONFIG> ();

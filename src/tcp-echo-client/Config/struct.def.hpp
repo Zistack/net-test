@@ -8,9 +8,9 @@ struct T : Spec::T <T>
 	TCP::Config::T &
 	tcpConfig ();
 
-	const Echo::Client::Protocol::Config::T &
+	const Echo::Client::FIFOProtocol::Config::T &
 	echoConfig () const;
 
-	Echo::Client::Protocol::Config::T &
+	Echo::Client::FIFOProtocol::Config::T &
 	echoConfig ();
 };
