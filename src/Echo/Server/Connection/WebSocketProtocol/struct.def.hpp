@@ -9,4 +9,6 @@ struct T : private WebSocketProtocolInterface::T
 	using WebSocketProtocolInterface::T::cancel;
 
 	~T () = default;
+
+	using WebSocketProtocolInterface::T::NAME;
 };
