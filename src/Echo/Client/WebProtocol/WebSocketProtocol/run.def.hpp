@@ -15,7 +15,14 @@ T <InterfaceInputStream, InterfaceOutputStream>::run
 			std::forward_as_tuple
 			(
 				this -> webSocketProtocol (),
-				[&] () { this -> webSocketProtocol () . run (); }
+				[&] ()
+				{
+					this -> webSocketProtocol () . run
+					(
+						std::forward <InputStream> (input_stream),
+						std::forward <OutputStream> (output_stream)
+					);
+				}
 			),
 			std::forward_as_tuple
 			(
@@ -27,14 +34,14 @@ T <InterfaceInputStream, InterfaceOutputStream>::run
 					IO::Util::eventLoop
 					(
 						exception_store,
-						std::forward <InputStream> (input_stream),
+						std::forward <InterfaceInputStream>
+						(
+							this -> m_interface_input_stream
+						),
 						this -> m_shutdown_signal,
 						[&] ()
 						{
-							this -> event
-							(
-								std::forward <InputStream> (input_stream)
-							);
+							this -> event ();
 						}
 					);
 

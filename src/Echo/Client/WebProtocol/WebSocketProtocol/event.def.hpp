@@ -1,10 +1,6 @@
 template <typename InterfaceInputStream, typename InterfaceOutputStream>
-template <typename InputStream>
 void
-T <InterfaceInputStream, InterfaceOutputStream>::event
-(
-	InputStream && input_stream
-)
+T <InterfaceInputStream, InterfaceOutputStream>::event ()
 {
 	WebSocket::Message::T message (WebSocket::Type::TEXT);
 
@@ -16,16 +12,19 @@ T <InterfaceInputStream, InterfaceOutputStream>::event
 			(
 				! IO::Util::test
 				(
-					std::forward <InputStream> (input_stream),
+					std::forward <InterfaceInputStream>
+					(
+						this -> m_interface_input_stream
+					),
 					'\n'
 				)
 			)
 			{
-				output_stream . put (input_stream . get ());
+				output_stream . put (this -> m_interface_input_stream . get ());
 			}
-			input_stream . get ();
+			this -> m_interface_input_stream . get ();
 		}
 	);
 
-	this -> websocketProtocol () . send (std::move (message));
+	this -> webSocketProtocol () . send (std::move (message));
 }

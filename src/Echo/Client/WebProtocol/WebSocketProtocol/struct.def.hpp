@@ -1,9 +1,12 @@
 template <typename InterfaceInputStream, typename InterfaceOutputStream>
 struct T : WebSocketInterface::T <InterfaceOutputStream>
 {
+	using ProtocolData =
+		typename WebSocketInterface::T <InterfaceOutputStream>::ProtocolData;
+
 	T
 	(
-		const WebSocket::Client::RequestFactory::T & request_factory,
+		const T::ProtocolData & protocol_data,
 		const HTTP::Response::T & response,
 		const WebSocket::Config::T & websocket_config,
 		InterfaceInputStream interface_input_stream,
@@ -24,9 +27,8 @@ struct T : WebSocketInterface::T <InterfaceOutputStream>
 
 private:
 
-	template <typename InputStream>
 	void
-	event (InputStream && input_stream);
+	event ();
 
 	// Given members
 
@@ -44,6 +46,11 @@ private:
 template <typename InterfaceInputStream, typename InterfaceOutputStream>
 T
 (
+	const typename T <InterfaceInputStream, InterfaceOutputStream>::
+		ProtocolData &
+			protocol_data,
+	const HTTP::Response::T & response,
+	const WebSocket::Config::T & websocket_config,
 	InterfaceInputStream && interface_input_stream,
 	InterfaceOutputStream && interface_output_stream
 ) ->

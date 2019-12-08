@@ -1,6 +1,13 @@
 template <typename OutputStream>
 struct T : WebSocket::Client::Protocol::T <T <OutputStream>>
 {
+	using ProtocolData =
+		typename WebSocket::
+			Client::
+			Protocol::
+			T <T <OutputStream>>::
+			ProtocolData;
+
 	void
 	pong (std::vector <uint8_t> && payload);
 
@@ -11,7 +18,7 @@ protected:
 
 	T
 	(
-		const WebSocket::Client::RequestFactory::T & request_factory,
+		const T::ProtocolData & protocol_data,
 		const HTTP::Response::T & response,
 		const WebSocket::Config::T & websocket_config,
 		OutputStream output_stream

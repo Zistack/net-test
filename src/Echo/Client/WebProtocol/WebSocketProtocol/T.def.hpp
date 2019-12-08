@@ -1,7 +1,7 @@
 template <typename InterfaceInputStream, typename InterfaceOutputStream>
 T <InterfaceInputStream, InterfaceOutputStream>::T
 (
-	const WebSocket::Client::RequestFactory::T & request_factory,
+	const T::ProtocolData & protocol_data,
 	const HTTP::Response::T & response,
 	const WebSocket::Config::T & websocket_config,
 	InterfaceInputStream interface_input_stream,
@@ -9,7 +9,7 @@ T <InterfaceInputStream, InterfaceOutputStream>::T
 )
 :	WebSocketInterface::T <InterfaceOutputStream>
 	(
-		request_factory,
+		protocol_data,
 		response,
 		websocket_config,
 		interface_output_stream
