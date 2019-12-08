@@ -16,7 +16,10 @@ T <InterfaceInputStream, InterfaceOutputStream>::run
 			std::forward_as_tuple
 			(
 				this -> m_http_protocol,
-				[&] () { this -> m_http_protocol . run (); }
+				[&] ()
+				{
+					this -> m_http_protocol . run (input_stream, output_stream);
+				}
 			),
 			std::forward_as_tuple
 			(
@@ -41,7 +44,7 @@ T <InterfaceInputStream, InterfaceOutputStream>::run
 						throw Failure::ServiceError::T
 						(
 							"Server declined to switch protocols\n" +
-							upgrade_response . toString ()
+							std::get <1> (upgrade_response) . head ()
 						);
 					}
 				}
@@ -61,5 +64,5 @@ T <InterfaceInputStream, InterfaceOutputStream>::run
 		websocket_protocol
 	);
 
-	websocket_protocol . run ();
+	websocket_protocol . run (input_stream, output_stream);
 }

@@ -3,9 +3,7 @@ struct T
 {
 	T
 	(
-		const URI::T & uri,
-		const HTTP::Client::Config::T & http_config,
-		const WebSocket::Config::T & websocket_config,
+		const Config::T & config,
 		InterfaceInputStream interface_input_stream,
 		InterfaceOutputStream interface_output_stream
 	);
@@ -41,8 +39,8 @@ private:
 
 	Failure::CancellableAggregate::T
 	<
-		HTTP::Client::Protocol::T,
-		Failure::CancellableSlot::T <WebSocketProtocol>
+		HTTP::Client::Protocol::T &,
+		Failure::CancellableSlot::T <WebSocketProtocol> &
 	>
 	m_cancellable;
 };
@@ -50,9 +48,7 @@ private:
 template <typename InterfaceInputStream, typename InterfaceOutputStream>
 T
 (
-	const URI::T & uri,
-	const HTTP::Client::Config::T & http_config,
-	const WebSocket::Config::T & websocket_config,
+	const Config::T & config,
 	InterfaceInputStream && interface_input_stream,
 	InterfaceOutputStream && interface_output_stream
 ) ->
