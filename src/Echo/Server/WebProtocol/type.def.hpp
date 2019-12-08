@@ -5,11 +5,6 @@ using T = IO::ServerProtocol::T
 	std::pair
 	<
 		std::tuple <>,
-		std::tuple
-		<
-			const HTTP::Request::T &,
-			const Connection::WebSocketProtocol::T::ProtocolData &,
-			const WebSocket::Config::T &
-		>
+		std::tuple <const WebSocket::Config::T &>
 	>
 >;
