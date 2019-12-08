@@ -1,6 +1,6 @@
 struct T : private FIFOProtocolInterface::T
 {
-	using FIFOProtocolInterface::T::T;
+	T (Echo::Client::FIFOProtocol::T & echo_protocol);
 
 	using FIFOProtocolInterface::T::prime;
 	using FIFOProtocolInterface::T::run;
