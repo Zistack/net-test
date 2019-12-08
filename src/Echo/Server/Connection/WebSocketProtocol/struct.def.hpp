@@ -1,6 +1,6 @@
 struct T : private WebSocketProtocolInterface::T
 {
-	using WebSocketProtocolInterface::T::ResponseFactory;
+	using WebSocketProtocolInterface::T::ProtocolData;
 
 	using WebSocketProtocolInterface::T::T;
 

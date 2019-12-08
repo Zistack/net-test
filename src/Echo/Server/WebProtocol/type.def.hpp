@@ -8,7 +8,7 @@ using T = IO::ServerProtocol::T
 		std::tuple
 		<
 			const HTTP::Request::T &,
-			const Connection::WebSocketProtocol::T::ResponseFactory &,
+			const Connection::WebSocketProtocol::T::ProtocolData &,
 			const WebSocket::Config::T &
 		>
 	>
