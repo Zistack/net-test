@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include <GetConfig.hpp>
 #include <GetOpts.hpp>
 #include <IO.hpp>
 #include <Scope.hpp>
