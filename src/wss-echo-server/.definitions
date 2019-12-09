@@ -1,0 +1,51 @@
+# User-configurable options
+
+wss-echo-server-CFLAGS ::= -I/usr/include/libressl
+wss-echo-server-LFLAGS ::= -L/usr/lib/libressl -lpthread -lkcapi -ltls
+
+# Boilerplate that shouldn't be touched
+
+wss-echo-server-path ::= $(net-test-src-dir)/wss-echo-server
+
+wss-echo-server-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./wss-echo-server -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+wss-echo-server-header-files ::= \
+	$(filter %.hpp, $(wss-echo-server-files-and-directories))
+wss-echo-server-deps-files ::= \
+	$(filter %/deps, $(wss-echo-server-files-and-directories))
+wss-echo-server-directories ::= \
+	$(filter-out %.hpp %/deps, $(wss-echo-server-files-and-directories))
+
+wss-echo-server-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(wss-echo-server-path)/include.hpp)
+
+wss-echo-server-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(wss-echo-server-dependency-candidates)$\
+)
+
+wss-echo-server-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+wss-echo-server-inc-dir-flags ::= $(wss-echo-server-inc-dirs:%=-I %)
+wss-echo-server-include-flags ::= -I $(wss-echo-server-path) $(wss-echo-server-inc-dir-flags)
+
+wss-echo-server-top-file ::= $(wss-echo-server-path)/.build/main.cpp
+
+wss-echo-server-build-file ::= $(wss-echo-server-path)/.build/main.o
+
+wss-echo-server-bin-file ::= $(net-test-bin-dir)/wss-echo-server
+
+wss-echo-server-target ::= $(wss-echo-server-bin-file)
+
+wss-echo-server-install-file ::= $(net-test-binary-install-dir)/wss-echo-server
+
+wss-echo-server-install-target ::= $(wss-echo-server-install-file)

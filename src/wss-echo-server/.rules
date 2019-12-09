@@ -1,0 +1,40 @@
+wss-echo-server-dependency-targets ::= $(foreach \
+	wss-echo-server-dependency,$\
+	$(wss-echo-server-dependencies),$\
+	$($(wss-echo-server-dependency)-target)$\
+)
+
+wss-echo-server-dependency-install-targets ::= $(foreach \
+	wss-echo-server-dependency,$\
+	$(wss-echo-server-dependencies),$\
+	$($(wss-echo-server-dependency)-install-target)$\
+)
+
+.PHONY : wss-echo-server
+wss-echo-server : $(wss-echo-server-target)
+
+.PHONY : wss-echo-server-clean
+wss-echo-server-clean :
+	rm -rf $(wss-echo-server-bin-file)
+	rm -rf $(wss-echo-server-build-file)
+	rm -rf $(wss-echo-server-top-file)
+
+.PHONY : wss-echo-server-install
+wss-echo-server-install : $(wss-echo-server-install-target)
+
+.PHONY : wss-echo-server-uninstall
+wss-echo-server-uninstall :
+	rm -rf $(wss-echo-server-install-file)
+
+.DELETE_ON_ERROR : $(wss-echo-server-top-file)
+$(wss-echo-server-top-file) : $(wss-echo-server-deps-files) $(wss-echo-server-directories)
+	cliide binary-include-file $(wss-echo-server-path) > $(@)
+
+$(wss-echo-server-build-file) : $(wss-echo-server-top-file) $(wss-echo-server-header-files) $(wss-echo-server-dependency-targets)
+	$(net-test-CPP) $(wss-echo-server-include-flags) $(net-test-CFLAGS) $(wss-echo-server-CFLAGS) -c -o $(@) $(<)
+
+$(wss-echo-server-bin-file) : $(wss-echo-server-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(wss-echo-server-LFLAGS) -o $(@) $(<)
+
+$(wss-echo-server-install-file) : $(wss-echo-server-bin-file) $(wss-echo-server-dependency-install-targets)
+	cp $(<) $(@)
