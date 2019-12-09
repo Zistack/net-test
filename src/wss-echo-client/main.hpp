@@ -72,6 +72,8 @@ main (int argc, char ** argv)
 
 	Config::T config (IO::Blocking::InputStream::T (config_file . reader ()));
 
+	// Create the echo client.
+
 	Echo::Client::WebProtocol::T echo_protocol
 	(
 		config . echoConfig (),
@@ -81,7 +83,11 @@ main (int argc, char ** argv)
 
 	TLS::Client::Service::T tls_client (echo_protocol, config . tlsConfig ());
 
+	// Prime the echo client.
+
 	tls_client . prime ();
+
+	// Run the echo client.
 
 	tls_client . run ();
 
