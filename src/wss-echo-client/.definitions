@@ -1,7 +1,7 @@
 # User-configurable options
 
-wss-echo-client-CFLAGS ::= -I/usr/include/libressl
-wss-echo-client-LFLAGS ::= -L/usr/lib/libressl -lpthread -lkcapi -ltls
+wss-echo-client-CFLAGS ::=
+wss-echo-client-LFLAGS ::= -lpthread -lkcapi -lgnutls
 
 # Boilerplate that shouldn't be touched
 
