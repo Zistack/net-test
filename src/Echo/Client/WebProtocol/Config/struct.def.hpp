@@ -3,10 +3,10 @@ struct T : Spec::T <T>
 	using Spec::T <T>::T;
 
 	const URI::T &
-	uri () const;
+	resource () const;
 
 	URI::T &
-	uri ();
+	resource ();
 
 	const HTTP::Client::Config::T &
 	httpConfig () const;

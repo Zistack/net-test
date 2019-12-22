@@ -6,9 +6,9 @@ using T = GetConfig::Section::T
 	<
 		GetConfig::URI::T,
 		false,
-		URI,
-		URI_DESCRIPTION,
-		URI_DEFAULT
+		RESOURCE,
+		RESOURCE_DESCRIPTION,
+		RESOURCE_DEFAULT
 	>,
 	GetConfig::Member::T
 	<

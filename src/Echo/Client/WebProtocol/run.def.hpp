@@ -30,7 +30,11 @@ T <InterfaceInputStream, InterfaceOutputStream>::run
 						this -> m_http_protocol .
 						template upgrade <WebSocketProtocol>
 						(
-							std::forward_as_tuple (this -> m_uri),
+							std::forward_as_tuple
+							(
+								this -> m_host,
+								this -> m_resource
+							),
 							std::forward_as_tuple
 							(
 								this -> m_websocket_config,
