@@ -5,7 +5,7 @@ T::respond (const HTTP::Request::T & request)
 
 	return HTTP::Response::T
 	(
-		"1.1",
+		"HTTP/1.1",
 		426,
 		"Upgrade Required",
 		std::initializer_list <std::pair <std::string, std::string>>
