@@ -37,11 +37,9 @@ main (int argc, char ** argv)
 				"help",
 				[&] ()
 				{
-					{
-						Scope::T output_scope (stdout);
+					getopts_spec . printHelp (stdout, argv [0], 80, 8, 0);
 
-						getopts_spec . printHelp (stdout, argv [0], 80, 8, 0);
-					}
+					stdout . flush ();
 
 					exit (EXIT_SUCCESS);
 				},
@@ -51,11 +49,9 @@ main (int argc, char ** argv)
 				"config-help",
 				[&] ()
 				{
-					{
-						Scope::T output_scope (stdout);
+					Config::T::printHelp (stdout, 80, 8, 0);
 
-						Config::T::printHelp (stdout, 80, 8, 0);
-					}
+					stdout . flush ();
 
 					exit (EXIT_SUCCESS);
 				},

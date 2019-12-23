@@ -11,18 +11,14 @@ T::writeResponse (const std::string & response, OutputStream && output_stream)
 				[&] () { output_stream . cancel (); }
 			);
 
-			if constexpr (IO::TypeTraits::IsBuffered::T <OutputStream>::value)
-			{
-				Scope::T output_scope (output_stream);
+			output_stream . print (response + "\n");
 
-				output_stream . print (response + "\n");
-			}
-			else
+			if constexpr (IO::IsBuffered::T <OutputStream>::value)
 			{
-				output_stream . print (response + "\n");
+				output_stream . flush ();
 			}
 		}
-		if constexpr (IO::TypeTraits::IsClearable::T <OutputStream>::value)
+		if constexpr (IO::IsClearable::T <OutputStream>::value)
 		{
 			output_stream . clear ();
 		}

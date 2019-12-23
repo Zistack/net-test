@@ -39,9 +39,23 @@ main (int argc, char ** argv)
 				{
 					getopts_spec . printHelp (stdout, argv [0], 80, 8, 0);
 
+					stdout . flush ();
+
 					exit (EXIT_SUCCESS);
 				},
 				"Prints this message and exits."
+			},
+			{
+				"config-help",
+				[&] ()
+				{
+					Config::T::printHelp (stdout, 80, 8, 0);
+
+					stdout . flush ();
+
+					exit (EXIT_SUCCESS);
+				},
+				"Prints documentation for the configuration file and exits."
 			}
 		}
 	);
