@@ -1,0 +1,51 @@
+# User-configurable options
+
+tls-echo-client-CFLAGS ::=
+tls-echo-client-LFLAGS ::= -lpthread -lkcapi -lgnutls
+
+# Boilerplate that shouldn't be touched
+
+tls-echo-client-path ::= $(net-test-src-dir)/tls-echo-client
+
+tls-echo-client-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./tls-echo-client -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+tls-echo-client-header-files ::= \
+	$(filter %.hpp, $(tls-echo-client-files-and-directories))
+tls-echo-client-deps-files ::= \
+	$(filter %/deps, $(tls-echo-client-files-and-directories))
+tls-echo-client-directories ::= \
+	$(filter-out %.hpp %/deps, $(tls-echo-client-files-and-directories))
+
+tls-echo-client-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(tls-echo-client-path)/include.hpp)
+
+tls-echo-client-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(tls-echo-client-dependency-candidates)$\
+)
+
+tls-echo-client-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+tls-echo-client-inc-dir-flags ::= $(tls-echo-client-inc-dirs:%=-I %)
+tls-echo-client-include-flags ::= -I $(tls-echo-client-path) $(tls-echo-client-inc-dir-flags)
+
+tls-echo-client-top-file ::= $(tls-echo-client-path)/.build/main.cpp
+
+tls-echo-client-build-file ::= $(tls-echo-client-path)/.build/main.o
+
+tls-echo-client-bin-file ::= $(net-test-bin-dir)/tls-echo-client
+
+tls-echo-client-target ::= $(tls-echo-client-bin-file)
+
+tls-echo-client-install-file ::= $(net-test-binary-install-dir)/tls-echo-client
+
+tls-echo-client-install-target ::= $(tls-echo-client-install-file)

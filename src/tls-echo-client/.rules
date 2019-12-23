@@ -1,0 +1,40 @@
+tls-echo-client-dependency-targets ::= $(foreach \
+	tls-echo-client-dependency,$\
+	$(tls-echo-client-dependencies),$\
+	$($(tls-echo-client-dependency)-target)$\
+)
+
+tls-echo-client-dependency-install-targets ::= $(foreach \
+	tls-echo-client-dependency,$\
+	$(tls-echo-client-dependencies),$\
+	$($(tls-echo-client-dependency)-install-target)$\
+)
+
+.PHONY : tls-echo-client
+tls-echo-client : $(tls-echo-client-target)
+
+.PHONY : tls-echo-client-clean
+tls-echo-client-clean :
+	rm -rf $(tls-echo-client-bin-file)
+	rm -rf $(tls-echo-client-build-file)
+	rm -rf $(tls-echo-client-top-file)
+
+.PHONY : tls-echo-client-install
+tls-echo-client-install : $(tls-echo-client-install-target)
+
+.PHONY : tls-echo-client-uninstall
+tls-echo-client-uninstall :
+	rm -rf $(tls-echo-client-install-file)
+
+.DELETE_ON_ERROR : $(tls-echo-client-top-file)
+$(tls-echo-client-top-file) : $(tls-echo-client-deps-files) $(tls-echo-client-directories)
+	cliide binary-include-file $(tls-echo-client-path) > $(@)
+
+$(tls-echo-client-build-file) : $(tls-echo-client-top-file) $(tls-echo-client-header-files) $(tls-echo-client-dependency-targets)
+	$(net-test-CPP) $(tls-echo-client-include-flags) $(net-test-CFLAGS) $(tls-echo-client-CFLAGS) -c -o $(@) $(<)
+
+$(tls-echo-client-bin-file) : $(tls-echo-client-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(tls-echo-client-LFLAGS) -o $(@) $(<)
+
+$(tls-echo-client-install-file) : $(tls-echo-client-bin-file) $(tls-echo-client-dependency-install-targets)
+	cp $(<) $(@)

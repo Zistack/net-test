@@ -1,0 +1,40 @@
+tls-echo-server-dependency-targets ::= $(foreach \
+	tls-echo-server-dependency,$\
+	$(tls-echo-server-dependencies),$\
+	$($(tls-echo-server-dependency)-target)$\
+)
+
+tls-echo-server-dependency-install-targets ::= $(foreach \
+	tls-echo-server-dependency,$\
+	$(tls-echo-server-dependencies),$\
+	$($(tls-echo-server-dependency)-install-target)$\
+)
+
+.PHONY : tls-echo-server
+tls-echo-server : $(tls-echo-server-target)
+
+.PHONY : tls-echo-server-clean
+tls-echo-server-clean :
+	rm -rf $(tls-echo-server-bin-file)
+	rm -rf $(tls-echo-server-build-file)
+	rm -rf $(tls-echo-server-top-file)
+
+.PHONY : tls-echo-server-install
+tls-echo-server-install : $(tls-echo-server-install-target)
+
+.PHONY : tls-echo-server-uninstall
+tls-echo-server-uninstall :
+	rm -rf $(tls-echo-server-install-file)
+
+.DELETE_ON_ERROR : $(tls-echo-server-top-file)
+$(tls-echo-server-top-file) : $(tls-echo-server-deps-files) $(tls-echo-server-directories)
+	cliide binary-include-file $(tls-echo-server-path) > $(@)
+
+$(tls-echo-server-build-file) : $(tls-echo-server-top-file) $(tls-echo-server-header-files) $(tls-echo-server-dependency-targets)
+	$(net-test-CPP) $(tls-echo-server-include-flags) $(net-test-CFLAGS) $(tls-echo-server-CFLAGS) -c -o $(@) $(<)
+
+$(tls-echo-server-bin-file) : $(tls-echo-server-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(tls-echo-server-LFLAGS) -o $(@) $(<)
+
+$(tls-echo-server-install-file) : $(tls-echo-server-bin-file) $(tls-echo-server-dependency-install-targets)
+	cp $(<) $(@)
