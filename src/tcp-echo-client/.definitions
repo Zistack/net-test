@@ -1,7 +1,7 @@
 # User-configurable options
 
 tcp-echo-client-CFLAGS ::=
-tcp-echo-client-LFLAGS ::= -lpthread -lkcapi
+tcp-echo-client-LFLAGS ::= -lpthread -lkcapi -lgnutls
 
 # Boilerplate that shouldn't be touched
 
