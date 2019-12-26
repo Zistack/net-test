@@ -73,6 +73,7 @@ main (int argc, char ** argv)
 	Echo::Server::WebProtocol::T echo_protocol
 	(
 		config . httpConfig (),
+		HTTP::HostData::T (config . tlsConfig ()),
 		std::make_pair
 		(
 			std::make_tuple (),

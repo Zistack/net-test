@@ -48,7 +48,7 @@ T <InterfaceInputStream, InterfaceOutputStream>::run
 						throw Failure::ServiceError::T
 						(
 							"Server declined to switch protocols\n" +
-							std::get <1> (upgrade_response) . head ()
+							std::get <1> (upgrade_response) . toString ()
 						);
 					}
 				}
