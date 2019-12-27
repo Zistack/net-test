@@ -1,0 +1,40 @@
+ws-echo-client-dependency-targets ::= $(foreach \
+	ws-echo-client-dependency,$\
+	$(ws-echo-client-dependencies),$\
+	$($(ws-echo-client-dependency)-target)$\
+)
+
+ws-echo-client-dependency-install-targets ::= $(foreach \
+	ws-echo-client-dependency,$\
+	$(ws-echo-client-dependencies),$\
+	$($(ws-echo-client-dependency)-install-target)$\
+)
+
+.PHONY : ws-echo-client
+ws-echo-client : $(ws-echo-client-target)
+
+.PHONY : ws-echo-client-clean
+ws-echo-client-clean :
+	rm -rf $(ws-echo-client-bin-file)
+	rm -rf $(ws-echo-client-build-file)
+	rm -rf $(ws-echo-client-top-file)
+
+.PHONY : ws-echo-client-install
+ws-echo-client-install : $(ws-echo-client-install-target)
+
+.PHONY : ws-echo-client-uninstall
+ws-echo-client-uninstall :
+	rm -rf $(ws-echo-client-install-file)
+
+.DELETE_ON_ERROR : $(ws-echo-client-top-file)
+$(ws-echo-client-top-file) : $(ws-echo-client-deps-files) $(ws-echo-client-directories)
+	cliide binary-include-file $(ws-echo-client-path) > $(@)
+
+$(ws-echo-client-build-file) : $(ws-echo-client-top-file) $(ws-echo-client-header-files) $(ws-echo-client-dependency-targets)
+	$(net-test-CPP) $(ws-echo-client-include-flags) $(net-test-CFLAGS) $(ws-echo-client-CFLAGS) -c -o $(@) $(<)
+
+$(ws-echo-client-bin-file) : $(ws-echo-client-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(ws-echo-client-LFLAGS) -o $(@) $(<)
+
+$(ws-echo-client-install-file) : $(ws-echo-client-bin-file) $(ws-echo-client-dependency-install-targets)
+	cp $(<) $(@)

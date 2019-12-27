@@ -1,0 +1,40 @@
+ws-echo-server-dependency-targets ::= $(foreach \
+	ws-echo-server-dependency,$\
+	$(ws-echo-server-dependencies),$\
+	$($(ws-echo-server-dependency)-target)$\
+)
+
+ws-echo-server-dependency-install-targets ::= $(foreach \
+	ws-echo-server-dependency,$\
+	$(ws-echo-server-dependencies),$\
+	$($(ws-echo-server-dependency)-install-target)$\
+)
+
+.PHONY : ws-echo-server
+ws-echo-server : $(ws-echo-server-target)
+
+.PHONY : ws-echo-server-clean
+ws-echo-server-clean :
+	rm -rf $(ws-echo-server-bin-file)
+	rm -rf $(ws-echo-server-build-file)
+	rm -rf $(ws-echo-server-top-file)
+
+.PHONY : ws-echo-server-install
+ws-echo-server-install : $(ws-echo-server-install-target)
+
+.PHONY : ws-echo-server-uninstall
+ws-echo-server-uninstall :
+	rm -rf $(ws-echo-server-install-file)
+
+.DELETE_ON_ERROR : $(ws-echo-server-top-file)
+$(ws-echo-server-top-file) : $(ws-echo-server-deps-files) $(ws-echo-server-directories)
+	cliide binary-include-file $(ws-echo-server-path) > $(@)
+
+$(ws-echo-server-build-file) : $(ws-echo-server-top-file) $(ws-echo-server-header-files) $(ws-echo-server-dependency-targets)
+	$(net-test-CPP) $(ws-echo-server-include-flags) $(net-test-CFLAGS) $(ws-echo-server-CFLAGS) -c -o $(@) $(<)
+
+$(ws-echo-server-bin-file) : $(ws-echo-server-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(ws-echo-server-LFLAGS) -o $(@) $(<)
+
+$(ws-echo-server-install-file) : $(ws-echo-server-bin-file) $(ws-echo-server-dependency-install-targets)
+	cp $(<) $(@)

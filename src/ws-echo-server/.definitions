@@ -1,0 +1,51 @@
+# User-configurable options
+
+ws-echo-server-CFLAGS ::=
+ws-echo-server-LFLAGS ::= -lpthread -lkcapi -lgnutls
+
+# Boilerplate that shouldn't be touched
+
+ws-echo-server-path ::= $(net-test-src-dir)/ws-echo-server
+
+ws-echo-server-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./ws-echo-server -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+ws-echo-server-header-files ::= \
+	$(filter %.hpp, $(ws-echo-server-files-and-directories))
+ws-echo-server-deps-files ::= \
+	$(filter %/deps, $(ws-echo-server-files-and-directories))
+ws-echo-server-directories ::= \
+	$(filter-out %.hpp %/deps, $(ws-echo-server-files-and-directories))
+
+ws-echo-server-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(ws-echo-server-path)/include.hpp)
+
+ws-echo-server-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(ws-echo-server-dependency-candidates)$\
+)
+
+ws-echo-server-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+ws-echo-server-inc-dir-flags ::= $(ws-echo-server-inc-dirs:%=-I %)
+ws-echo-server-include-flags ::= -I $(ws-echo-server-path) $(ws-echo-server-inc-dir-flags)
+
+ws-echo-server-top-file ::= $(ws-echo-server-path)/.build/main.cpp
+
+ws-echo-server-build-file ::= $(ws-echo-server-path)/.build/main.o
+
+ws-echo-server-bin-file ::= $(net-test-bin-dir)/ws-echo-server
+
+ws-echo-server-target ::= $(ws-echo-server-bin-file)
+
+ws-echo-server-install-file ::= $(net-test-binary-install-dir)/ws-echo-server
+
+ws-echo-server-install-target ::= $(ws-echo-server-install-file)
