@@ -70,19 +70,6 @@ main (int argc, char ** argv)
 
 	// Create the echo server.
 
-	if
-	(
-		std::optional <HTTP::HostData::T>
-		(
-			HTTP::HostData::T (config . tcpConfig ())
-		) ==
-			std::nullopt
-	)
-	{
-		// DEBUG
-		fprintf (stderr, "C++ is weird\n");
-	}
-
 	Echo::Server::WebProtocol::T echo_protocol
 	(
 		config . httpConfig (),
