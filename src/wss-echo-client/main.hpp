@@ -72,7 +72,7 @@ main (int argc, char ** argv)
 
 	Echo::Client::WebProtocol::T echo_protocol
 	(
-		config . tlsConfig () . serverName (),
+		HTTP::Header::Host::T (config . tlsConfig ()),
 		config . echoConfig (),
 		stdin,
 		stdout

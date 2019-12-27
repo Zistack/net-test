@@ -3,7 +3,7 @@ struct T
 {
 	T
 	(
-		const URI::Authority::Host::T & host,
+		const HTTP::Header::Host::T & host,
 		const Config::T & config,
 		InterfaceInputStream interface_input_stream,
 		InterfaceOutputStream interface_output_stream
@@ -28,7 +28,7 @@ private:
 
 	// Given members
 
-	const URI::Authority::Host::T m_host;
+	const HTTP::Header::Host::T m_host;
 	const URI::T m_resource;
 	const WebSocket::Config::T m_websocket_config;
 	InterfaceInputStream m_interface_input_stream;
@@ -50,7 +50,7 @@ private:
 template <typename InterfaceInputStream, typename InterfaceOutputStream>
 T
 (
-	const URI::Authority::Host::T & host,
+	const HTTP::Header::Host::T & host,
 	const Config::T & config,
 	InterfaceInputStream && interface_input_stream,
 	InterfaceOutputStream && interface_output_stream

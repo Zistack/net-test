@@ -1,7 +1,7 @@
 template <typename InterfaceInputStream, typename InterfaceOutputStream>
 T <InterfaceInputStream, InterfaceOutputStream>::T
 (
-	const URI::Authority::Host::T & host,
+	const HTTP::Header::Host::T & host,
 	const Config::T & config,
 	InterfaceInputStream interface_input_stream,
 	InterfaceOutputStream interface_output_stream

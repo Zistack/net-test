@@ -7,4 +7,12 @@ T::T
 )
 :	HTTPProtocolInterface::T (config, host_data, upgrade_arguments)
 {
+	if (host_data == std::nullopt)
+	{
+		fprintf (stderr, "Setting server host data to null\n");
+	}
+	else
+	{
+		fprintf (stderr, "Setting server host data to non-null\n");
+	}
 }
