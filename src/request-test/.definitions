@@ -1,0 +1,51 @@
+# User-configurable options
+
+request-test-CFLAGS ::=
+request-test-LFLAGS ::= -lpthread -lkcapi -lgnutls
+
+# Boilerplate that shouldn't be touched
+
+request-test-path ::= $(net-test-src-dir)/request-test
+
+request-test-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./request-test -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+request-test-header-files ::= \
+	$(filter %.hpp, $(request-test-files-and-directories))
+request-test-deps-files ::= \
+	$(filter %/deps, $(request-test-files-and-directories))
+request-test-directories ::= \
+	$(filter-out %.hpp %/deps, $(request-test-files-and-directories))
+
+request-test-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(request-test-path)/include.hpp)
+
+request-test-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(request-test-dependency-candidates)$\
+)
+
+request-test-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+request-test-inc-dir-flags ::= $(request-test-inc-dirs:%=-I %)
+request-test-include-flags ::= -I $(request-test-path) $(request-test-inc-dir-flags)
+
+request-test-top-file ::= $(request-test-path)/.build/main.cpp
+
+request-test-build-file ::= $(request-test-path)/.build/main.o
+
+request-test-bin-file ::= $(net-test-bin-dir)/request-test
+
+request-test-target ::= $(request-test-bin-file)
+
+request-test-install-file ::= $(net-test-binary-install-dir)/request-test
+
+request-test-install-target ::= $(request-test-install-file)

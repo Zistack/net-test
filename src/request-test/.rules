@@ -1,0 +1,40 @@
+request-test-dependency-targets ::= $(foreach \
+	request-test-dependency,$\
+	$(request-test-dependencies),$\
+	$($(request-test-dependency)-target)$\
+)
+
+request-test-dependency-install-targets ::= $(foreach \
+	request-test-dependency,$\
+	$(request-test-dependencies),$\
+	$($(request-test-dependency)-install-target)$\
+)
+
+.PHONY : request-test
+request-test : $(request-test-target)
+
+.PHONY : request-test-clean
+request-test-clean :
+	rm -rf $(request-test-bin-file)
+	rm -rf $(request-test-build-file)
+	rm -rf $(request-test-top-file)
+
+.PHONY : request-test-install
+request-test-install : $(request-test-install-target)
+
+.PHONY : request-test-uninstall
+request-test-uninstall :
+	rm -rf $(request-test-install-file)
+
+.DELETE_ON_ERROR : $(request-test-top-file)
+$(request-test-top-file) : $(request-test-deps-files) $(request-test-directories)
+	cliide binary-include-file $(request-test-path) > $(@)
+
+$(request-test-build-file) : $(request-test-top-file) $(request-test-header-files) $(request-test-dependency-targets)
+	$(net-test-CPP) $(request-test-include-flags) $(net-test-CFLAGS) $(request-test-CFLAGS) -c -o $(@) $(<)
+
+$(request-test-bin-file) : $(request-test-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(request-test-LFLAGS) -o $(@) $(<)
+
+$(request-test-install-file) : $(request-test-bin-file) $(request-test-dependency-install-targets)
+	cp $(<) $(@)

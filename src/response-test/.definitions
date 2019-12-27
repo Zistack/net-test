@@ -1,0 +1,51 @@
+# User-configurable options
+
+response-test-CFLAGS ::=
+response-test-LFLAGS ::= -lpthread -lkcapi -lgnutls
+
+# Boilerplate that shouldn't be touched
+
+response-test-path ::= $(net-test-src-dir)/response-test
+
+response-test-files-and-directories ::= \
+	$(patsubst \
+		./%,$\
+		$(net-test-src-dir)/%,$\
+		$(shell \
+			cd $(net-test-src-dir); \
+			find ./response-test -type f -regex '\.\(/[^./][^/]*\)*\.hpp' -or \
+				-type d -regex '\.\(/[^./][^/]*\)*' -or \
+				-type f -name 'deps' \
+		)$\
+	)
+
+response-test-header-files ::= \
+	$(filter %.hpp, $(response-test-files-and-directories))
+response-test-deps-files ::= \
+	$(filter %/deps, $(response-test-files-and-directories))
+response-test-directories ::= \
+	$(filter-out %.hpp %/deps, $(response-test-files-and-directories))
+
+response-test-dependency-candidates ::= \
+	$(shell sed -ne 's~\#include *<\(.*\)\.hpp>.*~\1~p' $(response-test-path)/include.hpp)
+
+response-test-dependencies ::= $(filter \
+	$(net-test-export-targets),$\
+	$(response-test-dependency-candidates)$\
+)
+
+response-test-inc-dirs ::= $(net-test-inc-dir) $(net-test-reference-inc-dirs)
+response-test-inc-dir-flags ::= $(response-test-inc-dirs:%=-I %)
+response-test-include-flags ::= -I $(response-test-path) $(response-test-inc-dir-flags)
+
+response-test-top-file ::= $(response-test-path)/.build/main.cpp
+
+response-test-build-file ::= $(response-test-path)/.build/main.o
+
+response-test-bin-file ::= $(net-test-bin-dir)/response-test
+
+response-test-target ::= $(response-test-bin-file)
+
+response-test-install-file ::= $(net-test-binary-install-dir)/response-test
+
+response-test-install-target ::= $(response-test-install-file)

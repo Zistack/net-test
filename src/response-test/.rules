@@ -1,0 +1,40 @@
+response-test-dependency-targets ::= $(foreach \
+	response-test-dependency,$\
+	$(response-test-dependencies),$\
+	$($(response-test-dependency)-target)$\
+)
+
+response-test-dependency-install-targets ::= $(foreach \
+	response-test-dependency,$\
+	$(response-test-dependencies),$\
+	$($(response-test-dependency)-install-target)$\
+)
+
+.PHONY : response-test
+response-test : $(response-test-target)
+
+.PHONY : response-test-clean
+response-test-clean :
+	rm -rf $(response-test-bin-file)
+	rm -rf $(response-test-build-file)
+	rm -rf $(response-test-top-file)
+
+.PHONY : response-test-install
+response-test-install : $(response-test-install-target)
+
+.PHONY : response-test-uninstall
+response-test-uninstall :
+	rm -rf $(response-test-install-file)
+
+.DELETE_ON_ERROR : $(response-test-top-file)
+$(response-test-top-file) : $(response-test-deps-files) $(response-test-directories)
+	cliide binary-include-file $(response-test-path) > $(@)
+
+$(response-test-build-file) : $(response-test-top-file) $(response-test-header-files) $(response-test-dependency-targets)
+	$(net-test-CPP) $(response-test-include-flags) $(net-test-CFLAGS) $(response-test-CFLAGS) -c -o $(@) $(<)
+
+$(response-test-bin-file) : $(response-test-build-file)
+	$(net-test-CPP) $(net-test-LFLAGS) $(response-test-LFLAGS) -o $(@) $(<)
+
+$(response-test-install-file) : $(response-test-bin-file) $(response-test-dependency-install-targets)
+	cp $(<) $(@)
