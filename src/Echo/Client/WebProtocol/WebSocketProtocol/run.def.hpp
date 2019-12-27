@@ -46,6 +46,8 @@ T <InterfaceInputStream, InterfaceOutputStream>::run
 					);
 
 					exception_store . poll ();
+
+					this -> webSocketProtocol () . cancel ();
 				}
 			)
 		);
