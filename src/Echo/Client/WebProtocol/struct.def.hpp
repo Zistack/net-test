@@ -36,12 +36,12 @@ private:
 
 	// Internal members
 
-	HTTP::Client::Protocol::T m_http_protocol;
+	HTTP::Client::Protocol::T <> m_http_protocol;
 	Failure::CancellableSlot::T <WebSocketProtocol> m_websocket_cancel_slot;
 
 	Failure::CancellableAggregate::T
 	<
-		HTTP::Client::Protocol::T &,
+		HTTP::Client::Protocol::T <> &,
 		Failure::CancellableSlot::T <WebSocketProtocol> &
 	>
 	m_cancellable;
